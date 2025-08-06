@@ -1,0 +1,51 @@
+﻿@page "/auth/register"
+@using Tudu.Application.DTOs
+@using Tudu.Application.Interfaces
+@inject NavigationManager Navigation
+@inject IUserService UserService
+
+<h3>Register</h3>
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <p>@Message</p>
+}
+
+<EditForm Model="@registerRequest" OnValidSubmit="HandleRegister" >
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Username:</label>
+        <InputText @bind-Value="registerRequest.UserName" class="form-control" />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="registerRequest.Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Register</button>
+</EditForm>
+
+
+@code {
+    private RegisterRequest registerRequest = new();
+    private string Message;
+
+    private async Task HandleRegister()
+    {
+        var result = await UserService.RegisterAsync(registerRequest);
+
+        if (result.Success)
+        {
+            Message = "Registered successfully! Redirecting to login...";
+            await Task.Delay(1500);
+            Navigation.NavigateTo("/auth/login");
+        }
+        else
+        {
+            Message = result.message;
+        }
+    }
+}
