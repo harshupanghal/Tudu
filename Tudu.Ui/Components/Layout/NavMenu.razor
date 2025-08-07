@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Tudu.Ui</a>
+        <a class="navbar-brand" href="">Tudu</a>
     </div>
 </div>
 
@@ -15,15 +15,35 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink class="nav-link" href="/tasks" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Tasks
+                    </NavLink>
+                </Authorized>
+
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="/auth/register">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register
+                    </NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink class="nav-link" href="/auth/logout" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Logout
+                    </NavLink>
+                </Authorized>
+
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="/auth/login">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
+                    </NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>

@@ -1,0 +1,32 @@
+﻿@page "/tasks"
+@using System.Security.Claims
+@using Tudu.Application.Services
+@attribute [Authorize]
+
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Your tasks</h3>
+        <h3>Hello @context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value</h3>
+    </Authorized>
+    <NotAuthorized>
+        <p>Redirecting...</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            Navigation.NavigateTo("/auth/login", true);
+        }
+    }
+
+    
+}

@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Tudu.Infrastructure\Tudu.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\Auth\" />
+  </ItemGroup>
+
 </Project>

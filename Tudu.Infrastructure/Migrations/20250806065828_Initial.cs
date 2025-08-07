@@ -1,26 +1,25 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Tudu.Infrastructure.Migrations
-{
+    {
     /// <inheritdoc />
     public partial class Initial : Migration
-    {
+        {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
+            {
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
-                {
+                    {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
+                    },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
@@ -29,7 +28,7 @@ namespace Tudu.Infrastructure.Migrations
             migrationBuilder.CreateTable(
                 name: "UserTasks",
                 columns: table => new
-                {
+                    {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -38,7 +37,7 @@ namespace Tudu.Infrastructure.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
+                    },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserTasks", x => x.Id);
@@ -54,16 +53,16 @@ namespace Tudu.Infrastructure.Migrations
                 name: "IX_UserTasks_UserId",
                 table: "UserTasks",
                 column: "UserId");
-        }
+            }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
-        {
+            {
             migrationBuilder.DropTable(
                 name: "UserTasks");
 
             migrationBuilder.DropTable(
                 name: "Users");
+            }
         }
     }
-}

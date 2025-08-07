@@ -26,6 +26,8 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 const string AuthScheme = "tudu-auth";
 const string AuthCookie = "tudu-cookie";
 
+builder.Services.AddCascadingAuthenticationState();
+
 // to setup auth , we will have to configure builder to use authentication services
 builder.Services.AddAuthentication(AuthScheme)
     .AddCookie(AuthScheme, options =>
@@ -48,11 +50,11 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
-{
+    {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
+    }
 
 app.UseHttpsRedirection();
 

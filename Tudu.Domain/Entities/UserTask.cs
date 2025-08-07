@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Tudu.Domain.Entities;
 
 namespace Tudu.Domain.Entities;
 
@@ -10,7 +8,7 @@ public class UserTask
     public int Id { get; set; }
 
     [Required]
-    public  string Title { get; set; }
+    public string Title { get; set; }
 
     public string? Description { get; set; }
 

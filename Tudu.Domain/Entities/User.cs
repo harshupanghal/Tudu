@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Tudu.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Tudu.Domain.Entities
     {

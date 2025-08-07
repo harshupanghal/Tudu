@@ -1,5 +1,4 @@
 ﻿using Tudu.Domain.Entities;
-using System.Threading.Tasks;
 
 namespace Tudu.Application.Interfaces;
 

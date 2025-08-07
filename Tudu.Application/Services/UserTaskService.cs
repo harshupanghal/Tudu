@@ -1,7 +1,6 @@
 ﻿using Tudu.Application.DTOs;
 using Tudu.Application.Interfaces;
 using Tudu.Application.Mappers;
-using Tudu.Domain.Entities;
 
 namespace Tudu.Application.Services;
 
