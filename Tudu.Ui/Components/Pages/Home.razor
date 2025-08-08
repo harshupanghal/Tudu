@@ -1,7 +1,25 @@
 ﻿@page "/"
+<PageTitle>Tudu</PageTitle>
 
-<PageTitle>Home</PageTitle>
+<div class="landing-hero text-center d-flex flex-column justify-content-center align-items-center">
+    <h1 class="display-2 fw-bold text-white mb-3 mt-25">Tudu</h1>
+    <p class="lead text-secondary mb-4">Minimal, powerful, and private task management.</p>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+    <AuthorizeView>
+        <Authorized>
+            <a class="btn btn-primary btn-lg px-5 shadow" href="/tasks">
+                Go to My Tasks
+            </a>
+        </Authorized>
+        <NotAuthorized>
+            <div class="d-flex gap-3 flex-wrap justify-content-center">
+                <a class="btn btn-outline-light btn-lg px-4 shadow" href="/auth/login">
+                    Login
+                </a>
+                <a class="btn btn-secondary btn-lg px-4 shadow" href="/auth/register">
+                    Register
+                </a>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>

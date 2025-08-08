@@ -78,16 +78,17 @@
                         IsPersistent = true
                         };
                 await httpContext.SignInAsync(AuthScheme,principal,authProperties);
-                NavigationManager.NavigateTo(ReturnUrl);
 
                 MessageClass = "alert-success";
                 Message = result.message + result.UserName ?? "Login success.";
+
+                NavigationManager.NavigateTo("/tasks");
 
                
                 }
             else
             {
-                // Show backend error as info (not validation error)
+                
                 Message = result.message ?? "Register First";
                 MessageClass = "alert-warning";
             }

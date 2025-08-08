@@ -1,23 +1,48 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="app-container bg-dark text-white min-vh-100 d-flex flex-column">
+    <header class="navbar navbar-expand-lg navbar-dark bg-black px-4 shadow-sm">
+        <a class="navbar-brand fw-bold fs-4" href="">Tudu</a>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <NavLink class="nav-link text-white" href="/">Home</NavLink>
+                </li>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white" href="/tasks">Tasks</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white" href="/auth/logout">Logout</NavLink>
+                        </li>
+                    </Authorized>
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white" href="/auth/register">Register</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white" href="/auth/login">Login</NavLink>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+               
+            </ul>
         </div>
+    </header>
 
-        <article class="content px-4">
+    <main class="flex-grow-1 px-4 py-4">
+        <article class="container-fluid">
             @Body
         </article>
     </main>
 </div>
 
-<div id="blazor-error-ui">
+<div id="blazor-error-ui" class="alert alert-danger position-fixed bottom-0 start-0 m-3 shadow d-none">
     An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+    <a href="" class="reload text-light text-decoration-underline">Reload</a>
+    <button class="btn-close dismiss ms-2" aria-label="Close"></button>
 </div>

@@ -10,7 +10,7 @@ namespace Tudu.Infrastructure.Context
             {
             }
 
-        // DbSets for your entities
+        // DbSets for entities
         public DbSet<User> Users { get; set; }
         public DbSet<UserTask> UserTasks { get; set; }
 
@@ -35,7 +35,7 @@ namespace Tudu.Infrastructure.Context
                 entity.Property(t => t.IsCompleted).IsRequired();
                 entity.Property(t => t.CreatedAt).IsRequired();
 
-                // Relationship
+                // Relationships b/w entities
                 entity.HasOne(t => t.User)
                       .WithMany(u => u.Tasks)
                       .HasForeignKey(t => t.UserId)

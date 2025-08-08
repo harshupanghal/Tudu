@@ -1,50 +1,39 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Tudu</a>
+﻿<div class="navbar navbar-dark">
+    <h3 class="text-white ps-2 mb-4">Tudu</h3>
+</div>
+
+<nav class="nav flex-column">
+    <div class="nav-item mb-2">
+        <NavLink class="nav-link text-white" href="" Match="NavLinkMatch.All">
+            <i class="bi bi-house-door-fill me-2"></i> Home
+        </NavLink>
     </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    <AuthorizeView>
+        <Authorized>
+            <div class="nav-item mb-2">
+                <NavLink class="nav-link text-white" href="/tasks">
+                    <i class="bi bi-check2-square me-2"></i> Tasks
+                </NavLink>
+            </div>
+            <div class="nav-item mb-2">
+                <NavLink class="nav-link text-white" href="/auth/logout">
+                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                </NavLink>
+            </div>
+        </Authorized>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <AuthorizeView>
-                <Authorized>
-                    <NavLink class="nav-link" href="/tasks" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Tasks
-                    </NavLink>
-                </Authorized>
-
-                <NotAuthorized>
-                    <NavLink class="nav-link" href="/auth/register">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </NotAuthorized>
-            </AuthorizeView>
-        </div>
-
-        <div class="nav-item px-3">
-            <AuthorizeView>
-                <Authorized>
-                    <NavLink class="nav-link" href="/auth/logout" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Logout
-                    </NavLink>
-                </Authorized>
-
-                <NotAuthorized>
-                    <NavLink class="nav-link" href="/auth/login">
-                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </NotAuthorized>
-            </AuthorizeView>
-        </div>
-    </nav>
-</div>
-
+        <NotAuthorized>
+            <div class="nav-item mb-2">
+                <NavLink class="nav-link text-white" href="/auth/register">
+                    <i class="bi bi-person-plus-fill me-2"></i> Register
+                </NavLink>
+            </div>
+            <div class="nav-item mb-2">
+                <NavLink class="nav-link text-white" href="/auth/login">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Login
+                </NavLink>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</nav>

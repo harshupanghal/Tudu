@@ -1,32 +1,176 @@
 ﻿@page "/tasks"
-@using System.Security.Claims
-@using Tudu.Application.Services
 @attribute [Authorize]
 
+@using System.Security.Claims
+@using Tudu.Application.DTOs
+@using Tudu.Application.Interfaces
+@inject IUserTaskService TaskService
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<AuthorizeView>
-    <Authorized>
-        <h3>Your tasks</h3>
-        <h3>Hello @context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value</h3>
-    </Authorized>
-    <NotAuthorized>
-        <p>Redirecting...</p>
-    </NotAuthorized>
-</AuthorizeView>
+<h2 class="mb-4 text-white">Your Tasks</h2>
+
+@if (isLoading)
+{
+    <p class="text-light">Loading your tasks...</p>
+}
+else
+{
+    <EditForm Model="taskModel" OnValidSubmit="HandleSave" method="post" FormName="TaskForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label text-light">Title</label>
+            <InputText class="form-control" @bind-Value="taskModel.Title" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light">Description</label>
+            <InputTextArea class="form-control" @bind-Value="taskModel.Description" />
+        </div>
+
+        <button type="submit" class="btn btn-success me-2">
+            @(isEditing ? "Update Task" : "Add Task")
+        </button>
+
+        @if (isEditing)
+        {
+            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+        }
+    </EditForm>
+
+    <hr class="my-4 border-light" />
+
+    <table class="table table-dark table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Completed</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in tasks)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.Description</td>
+                    <td>
+                        <input type="checkbox" checked="@task.IsCompleted" @onclick="() => ToggleCompleted(task)" />
+                    </td>
+                    <td>@task.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info me-2" @onclick="() => EditTask(task)">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteTask(task.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    private List<UserTaskResponse> tasks = new();
+    private CreateUserTaskRequest taskModel = new();
+    private int currentUserId;
+    private bool isEditing = false;
+    private int editingTaskId = 0;
+    private bool isLoading = true;
+
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (!user.Identity?.IsAuthenticated ?? true)
         {
             Navigation.NavigateTo("/auth/login", true);
+            return;
         }
+
+        currentUserId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        await LoadTasks();
+        isLoading = false;
     }
 
-    
+    private async Task LoadTasks()
+    {
+        tasks = await TaskService.GetAllByUserIdAsync(currentUserId);
+        StateHasChanged();
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(taskModel.Title)) return;
+
+        if (isEditing)
+        {
+            var updateRequest = new UpdateUserTaskRequest
+            {
+                Id = editingTaskId,
+                Title = taskModel.Title,
+                Description = taskModel.Description,
+                UserId = currentUserId,
+                IsCompleted = false
+            };
+
+            await TaskService.UpdateAsync(updateRequest);
+        }
+        else
+        {
+            taskModel.UserId = currentUserId;
+            await TaskService.CreateAsync(taskModel);
+        }
+
+        await LoadTasks();
+        ResetForm();
+    }
+
+    private void EditTask(UserTaskResponse task)
+    {
+        taskModel = new CreateUserTaskRequest
+        {
+            Title = task.Title,
+            Description = task.Description,
+            UserId = currentUserId
+        };
+        isEditing = true;
+        editingTaskId = task.Id;
+    }
+
+    private async Task DeleteTask(int id)
+    {
+        await TaskService.DeleteAsync(id);
+        await LoadTasks();
+    }
+
+    private async Task ToggleCompleted(UserTaskResponse task)
+    {
+        var updateRequest = new UpdateUserTaskRequest
+        {
+            Id = task.Id,
+            Title = task.Title,
+            Description = task.Description,
+            IsCompleted = !task.IsCompleted,
+            UserId = currentUserId
+        };
+
+        await TaskService.UpdateAsync(updateRequest);
+        await LoadTasks();
+    }
+
+    private void CancelEdit()
+    {
+        ResetForm();
+    }
+
+    private void ResetForm()
+    {
+        taskModel = new CreateUserTaskRequest();
+        isEditing = false;
+        editingTaskId = 0;
+    }
 }
