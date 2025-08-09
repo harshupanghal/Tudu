@@ -43,8 +43,6 @@
     private string MessageClass = "alert-info";
     private bool isLoading = false;
 
-    private CancellationTokenSource _cts = new();
-
     private async Task HandleRegister()
     {
         isLoading = true;
@@ -58,24 +56,16 @@
             {
                 Message = "Registered successfully! Redirecting to login...";
                 MessageClass = "alert-success";
-                StateHasChanged();
+                // await Task.Delay(15000);
+                Message = result.message ?? "Registration success.";
+                NavigationManager.NavigateTo("/auth/login");
 
-                await Task.Delay(1500, _cts.Token); // Cancel if component is disposed
-
-                if (!_cts.IsCancellationRequested)
-                {
-                    NavigationManager.NavigateTo("/auth/login", forceLoad: true);
-                }
             }
             else
             {
                 Message = result.message ?? "Registration failed.";
                 MessageClass = "alert-warning";
             }
-        }
-        catch (TaskCanceledException)
-        {
-            // Navigation or delay was cancelled due to disposal
         }
         catch (Exception ex)
         {
@@ -86,11 +76,5 @@
         {
             isLoading = false;
         }
-    }
-
-    public void Dispose()
-    {
-        _cts.Cancel();
-        _cts.Dispose();
     }
 }

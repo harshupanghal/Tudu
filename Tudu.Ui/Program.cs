@@ -69,6 +69,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
     }
 
+if (!DbInitializer.InitializeDatabase(app.Services, out var error))
+{
+    Console.WriteLine(error); // Or use a logger
+}
+else
+{
+    Console.WriteLine("Database connection successful and tables ensured.");
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -81,3 +90,31 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+
+public static class DbInitializer
+{
+    public static bool InitializeDatabase(IServiceProvider serviceProvider, out string errorMessage)
+    {
+        errorMessage = null;
+
+        try
+        {
+            using var scope = serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<TuduDbContext>();
+
+            // This will apply any pending migrations and create the database if it doesn't exist
+            context.Database.EnsureCreated(); // use EnsureCreated() if you're not using Migrations
+
+            // Optional: test connection
+            context.Database.CanConnect();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Database initialization failed: {ex.Message}";
+            return false;
+        }
+    }
+}
