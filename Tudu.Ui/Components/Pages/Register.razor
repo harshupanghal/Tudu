@@ -7,31 +7,52 @@
 @inject NavigationManager NavigationManager
 @inject IUserService UserService
 
-<h3>Register</h3>
+<div class="card shadow-sm p-4 mt-4" style="max-width: 400px; margin: auto;">
+    <h3 class="text-center mb-4">Create Your Account</h3>
 
-@if (!string.IsNullOrWhiteSpace(Message))
-{
-    <div class="alert @MessageClass">@Message</div>
-}
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert @MessageClass fade show" role="alert">
+            @Message
+        </div>
+    }
 
-<EditForm Model="@registerRequest" method="Post" OnValidSubmit="HandleRegister"  FormName="@RegiForm">
-        <DataAnnotationsValidator/>
-    <div class="mb-3">
-        <label for="username">Username:</label>
-        <InputText id="username" @bind-Value="registerRequest.UserName" class="form-control" />
-        <ValidationMessage For="@(() => registerRequest.UserName)" />
+    <EditForm Model="@registerRequest" method="Post" OnValidSubmit="HandleRegister" FormName="@RegiForm">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label for="username" class="form-label fw-bold">Username</label>
+            <InputText id="username" @bind-Value="registerRequest.UserName" 
+                       class="form-control" placeholder="Enter a unique username" />
+            <ValidationMessage For="@(() => registerRequest.UserName)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label fw-bold">Password</label>
+            <InputText id="password" @bind-Value="registerRequest.Password" type="password" 
+                       class="form-control" placeholder="Choose a strong password" />
+            <ValidationMessage For="@(() => registerRequest.Password)" class="text-danger small" />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 d-flex justify-content-center align-items-center" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>Registering...</span>
+            }
+            else
+            {
+                <span>Register</span>
+            }
+        </button>
+    </EditForm>
+
+    <div class="text-center mt-3">
+        <small class="text-muted">
+            Already have an account? <a href="/auth/login">Login here</a>
+        </small>
     </div>
-
-    <div class="mb-3">
-        <label for="password">Password:</label>
-        <InputText id="password" @bind-Value="registerRequest.Password" type="password" class="form-control" />
-        <ValidationMessage For="@(() => registerRequest.Password)" />
-    </div>
-
-    <button type="submit" class="btn btn-primary" disabled="@isLoading">
-        @(isLoading ? "Registering..." : "Register")
-    </button>
-</EditForm>
+</div>
 
 @code {
     private const string RegiForm = "Registration-Form";
@@ -42,6 +63,7 @@
     private string? Message;
     private string MessageClass = "alert-info";
     private bool isLoading = false;
+    private CancellationTokenSource _cts = new();
 
     private async Task HandleRegister()
     {
@@ -54,27 +76,41 @@
 
             if (result.Success)
             {
-                Message = "Registered successfully! Redirecting to login...";
+                Message = " Registered successfully! Redirecting to login...";
                 MessageClass = "alert-success";
-                // await Task.Delay(15000);
-                Message = result.message ?? "Registration success.";
-                NavigationManager.NavigateTo("/auth/login");
+                StateHasChanged();
 
+                await Task.Delay(1500, _cts.Token);
+
+                if (!_cts.IsCancellationRequested)
+                {
+                    NavigationManager.NavigateTo("/auth/login", forceLoad: true);
+                }
             }
             else
             {
-                Message = result.message ?? "Registration failed.";
+                Message = result.message ?? " Registration failed. Please check your details.";
                 MessageClass = "alert-warning";
             }
         }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancellation due to navigation/disposal
+        }
         catch (Exception ex)
         {
-            Message = $"Unexpected error: {ex.Message}";
+            Message = $"❌ Unexpected error: {ex.Message}";
             MessageClass = "alert-danger";
         }
         finally
         {
             isLoading = false;
         }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
     }
 }

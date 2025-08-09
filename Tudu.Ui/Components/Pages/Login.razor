@@ -5,18 +5,68 @@
 @inject IUserService UserService
 @inject NavigationManager Navigation
 
-<EditForm Model="@loginRequest" method="Post" OnValidSubmit="@HandleLogin" FormName="@LoginForm" >
-    <InputText @bind-Value="loginRequest.UserName" />
-    <InputText @bind-Value="loginRequest.Password" type="password" />
-    <InputCheckbox @bind-Value='RememberMe' class="form-check-input" />
-    <button type="submit">Login</button>
-</EditForm>
+<div class="card shadow-sm p-4 mt-4" style="max-width: 400px; margin: auto;">
+    <h3 class="text-center mb-4">Login</h3>
+
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert @MessageClass fade show" role="alert">
+            @Message
+        </div>
+    }
+
+    <EditForm Model="@loginRequest" method="Post" OnValidSubmit="@HandleLogin" FormName="@LoginForm">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Username</label>
+            <InputText @bind-Value="loginRequest.UserName" 
+                       class="form-control" 
+                       placeholder="Enter your username" />
+            <ValidationMessage For="@(() => loginRequest.UserName)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Password</label>
+            <InputText @bind-Value="loginRequest.Password" type="password" 
+                       class="form-control" 
+                       placeholder="Enter your password" />
+            <ValidationMessage For="@(() => loginRequest.Password)" class="text-danger small" />
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox @bind-Value="RememberMe" class="form-check-input" id="rememberMe" />
+            <label for="rememberMe" class="form-check-label">Remember Me</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 d-flex justify-content-center align-items-center" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>Logging in...</span>
+            }
+            else
+            {
+                <span>Login</span>
+            }
+        </button>
+    </EditForm>
+
+    <div class="text-center mt-3">
+        <small class="text-muted">
+            Don’t have an account? <a href="/auth/register">Register here</a>
+        </small>
+    </div>
+</div>
 
 @code {
+    private bool RememberMe = false;
+    private bool isLoading = false;
 
+    private string? Message;
+    private string MessageClass = "alert-info";
     private const string LoginForm = "Login-Form";
 
-    private bool RememberMe = false;
 
     [SupplyParameterFromForm(FormName = LoginForm)]
     private LoginRequest loginRequest { get; set; } = new();
@@ -50,3 +100,4 @@
         Navigation.NavigateTo("/tasks", forceLoad: true); 
     }
 }
+
