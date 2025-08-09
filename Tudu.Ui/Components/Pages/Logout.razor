@@ -1,16 +1,12 @@
-﻿@page "/auth/logout"
-@using Microsoft.AspNetCore.Authentication
+﻿@inject HttpClient Http
 @inject NavigationManager NavigationManager
-<p>Logging out...</p>
+
+<button @onclick="Logoutt">Logout</button>
 
 @code {
-    [CascadingParameter]
-    public HttpContext HttpContext { get; set; }
-
-    const string AuthScheme = "tudu-auth";
-    protected override async Task OnInitializedAsync()
+    private async Task Logoutt()
     {
-        await HttpContext.SignOutAsync(AuthScheme);
-        NavigationManager.NavigateTo("/auth/login", replace: true);
+        await Http.PostAsync("/api/logout", null);
+        NavigationManager.NavigateTo("/auth/login", forceLoad: true);
     }
 }

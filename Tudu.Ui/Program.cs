@@ -1,3 +1,7 @@
+using Application.Interfaces;
+using Infrastructure.Security;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.EntityFrameworkCore;
 using Tudu.Application.Interfaces;
 using Tudu.Application.Services;
@@ -5,30 +9,34 @@ using Tudu.Infrastructure.Context;
 using Tudu.Infrastructure.Repositories;
 using Tudu.Ui.Components;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// UI + Blazor Server
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddCascadingAuthenticationState();
+
+// EF DB
 builder.Services.AddDbContext<TuduDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TuduConnection")));
 
-
+// Application services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserTaskService, UserTaskService>();
 
+// Repositories & security
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
+builder.Services.AddAuthentication().AddCookie();
 
+// Authentication setup (cookie)
 const string AuthScheme = "tudu-auth";
 const string AuthCookie = "tudu-cookie";
 
-builder.Services.AddCascadingAuthenticationState();
-
-// to setup auth , we will have to configure builder to use authentication services
+// Add Authentication & Authorization
 builder.Services.AddAuthentication(AuthScheme)
     .AddCookie(AuthScheme, options =>
     {
@@ -45,25 +53,29 @@ builder.Services.AddAuthentication(AuthScheme)
         options.SlidingExpiration = true;
     });
 
+builder.Services.AddAuthorization();
+
+// Add the built-in AuthenticationStateProvider that integrates with server cookie auth.
+// The server already knows how to provide authentication state from the HttpContext user.
+builder.Services.AddScoped<AuthenticationStateProvider,
+    ServerAuthenticationStateProvider>(); // ServerAuthenticationStateProvider lives in Blazor Server assemblies
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware order
 if (!app.Environment.IsDevelopment())
     {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
     }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-// then we will use them here
-app.UseAuthentication().
-    UseAuthorization();
-app.UseAntiforgery();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

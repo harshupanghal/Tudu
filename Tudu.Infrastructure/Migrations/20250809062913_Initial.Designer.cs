@@ -12,7 +12,7 @@ using Tudu.Infrastructure.Context;
 namespace Tudu.Infrastructure.Migrations
 {
     [DbContext(typeof(TuduDbContext))]
-    [Migration("20250806065828_Initial")]
+    [Migration("20250809062913_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
