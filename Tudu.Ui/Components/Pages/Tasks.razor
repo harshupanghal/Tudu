@@ -9,69 +9,132 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 
-<h2 class="mb-4 text-white">Your Tasks</h2>
+<h2 class=" text-center" style="font-size: clamp(2rem, 5vw, 3rem); margin: 2rem 0;">Your Tasks</h2>
 
-@if (isLoading)
-{
-    <p class="text-light">Loading your tasks...</p>
-}
-else
-{
-    <EditForm Model="taskModel" OnValidSubmit="HandleSave" method="post" FormName="TaskForm">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div class="mb-3">
-            <label class="form-label text-light">Title</label>
-            <InputText class="form-control" @bind-Value="taskModel.Title" />
+<div style="max-width:900px;" class="mx-auto my-5">
+    @if (isLoading)
+    {
+        <div class="text-center py-4">
+            <p style="color: var(--text-secondary);">Loading your tasks...</p>
         </div>
+    }
 
-        <div class="mb-3">
-            <label class="form-label text-light">Description</label>
-            <InputTextArea class="form-control" @bind-Value="taskModel.Description" />
+    <!-- Enhanced Form -->
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle);">
+        <EditForm Model="taskModel" OnValidSubmit="HandleSave" method="post" FormName="TaskForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary style="color: var(--accent-danger); margin-bottom: 1rem;" />
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-secondary); font-weight: 500; margin-bottom: 0.5rem; display: block; font-size: 0.95rem;">Title</label>
+                <InputText class="form-control" @bind-Value="taskModel.Title" 
+                           style="background: var(--glass-bg); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.875rem 1.25rem; color: var(--text-primary); font-size: 1rem; width: 100%; transition: all 0.3s var(--ease);"
+                           onfocus="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 0 0 3px rgba(125, 211, 252, 0.1)'; this.style.background='rgba(255, 255, 255, 0.08)'"
+                           onblur="this.style.borderColor='var(--border-subtle)'; this.style.boxShadow='none'; this.style.background='var(--glass-bg)'" />
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="color: var(--text-secondary); font-weight: 500; margin-bottom: 0.5rem; display: block; font-size: 0.95rem;">Description</label>
+                <InputTextArea class="form-control" @bind-Value="taskModel.Description" 
+                               style="background: var(--glass-bg); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.875rem 1.25rem; color: var(--text-primary); font-size: 1rem; width: 100%; min-height: 100px; resize: vertical; transition: all 0.3s var(--ease);"
+                               onfocus="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 0 0 3px rgba(125, 211, 252, 0.1)'; this.style.background='rgba(255, 255, 255, 0.08)'"
+                               onblur="this.style.borderColor='var(--border-subtle)'; this.style.boxShadow='none'; this.style.background='var(--glass-bg)'" />
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button type="submit" 
+                        style="background: linear-gradient(135deg, var(--accent-success), var(--accent-success-hover)); color: var(--bg-primary); border: none; padding: 0.875rem 2rem; border-radius: 25px; font-weight: 500; cursor: pointer; transition: all 0.3s var(--ease); box-shadow: var(--shadow-md); font-size: 1rem;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg), 0 0 20px rgba(134, 239, 172, 0.2)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
+                    @(isEditing ? "Update Task" : "Add Task")
+                </button>
+
+                @if (isEditing)
+                {
+                    <button type="button" @onclick="CancelEdit"
+                            style="background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid var(--border-subtle); padding: 0.875rem 2rem; border-radius: 25px; font-weight: 500; cursor: pointer; transition: all 0.3s var(--ease); backdrop-filter: blur(10px); font-size: 1rem;"
+                            onmouseover="this.style.background='rgba(255, 255, 255, 0.12)'; this.style.borderColor='var(--accent-primary)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'"
+                            onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        Cancel
+                    </button>
+                }
+            </div>
+        </EditForm>
+    </div>
+
+    <hr style="border: none; height: 1px; background: var(--border-subtle); margin: 2rem 0;" />
+
+    <!-- Enhanced Table Section -->
+    @if (tasks.Count < 1 && !isLoading)
+    {
+        <div style="text-align: center; padding: 3rem 2rem; background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle);">
+            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--bg-primary); font-size: 1.5rem;">
+                📝
+            </div>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin: 0;">No tasks found, start adding your tasks</p>
         </div>
+    }
+    else if (!isLoading)
+    {
+        <div style="background: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle);">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: rgba(125, 211, 252, 0.05);">
+                        <th style="padding: 1.25rem 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border-subtle);">Title</th>
+                        <th style="padding: 1.25rem 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border-subtle);">Description</th>
+                        <th style="padding: 1.25rem 1rem; text-align: center; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border-subtle);">Status</th>
+                        <th style="padding: 1.25rem 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border-subtle);">Created</th>
+                        <th style="padding: 1.25rem 1rem; text-align: center; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border-subtle);">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in tasks)
+                    {
+                        <tr style="transition: all 0.3s var(--ease); border-bottom: 1px solid var(--border-subtle);" 
+                            onmouseover="this.style.background='rgba(125, 211, 252, 0.03)'; this.style.transform='scale(1.01)'"
+                            onmouseout="this.style.background='transparent'; this.style.transform='scale(1)'">
+                            <td style="padding: 1.25rem 1rem; color: var(--text-primary); font-weight: 500; font-size: 0.95rem;">
+                                @task.Title
+                            </td>
+                            <td style="padding: 1.25rem 1rem; color: var(--text-secondary); font-size: 0.9rem; max-width: 200px; word-wrap: break-word;">
+                                @(string.IsNullOrEmpty(task.Description) ? "No description" : task.Description)
+                            </td>
+                            <td style="padding: 1.25rem 1rem; text-align: center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <input type="checkbox" checked="@task.IsCompleted" @onclick="() => ToggleCompleted(task)" 
+                                           style="width: 20px; height: 20px; accent-color: var(--accent-success); cursor: pointer; border-radius: 4px;" />
+                                    <span style="color: @(task.IsCompleted ? "var(--accent-success)" : "var(--text-muted)"); font-size: 0.8rem; font-weight: 500;">
+                                        @(task.IsCompleted ? "Done" : "Pending")
+                                    </span>
+                                </div>
+                            </td>
+                            <td style="padding: 1.25rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+                                @task.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")
+                            </td>
+                            <td style="padding: 1.25rem 1rem; text-align: center;">
+                                <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                    <button @onclick="() => EditTask(task)" 
+                                            style="background: var(--glass-bg); color: var(--accent-primary); border: 1px solid var(--accent-primary); padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 20px; cursor: pointer; transition: all 0.3s var(--ease); font-weight: 500;"
+                                            onmouseover="this.style.background='var(--accent-primary)'; this.style.color='var(--bg-primary)'; this.style.transform='translateY(-1px)'"
+                                            onmouseout="this.style.background='var(--glass-bg)'; this.style.color='var(--accent-primary)'; this.style.transform='translateY(0)'">
+                                        Edit
+                                    </button>
+                                    <button @onclick="() => DeleteTask(task.Id)"
+                                            style="background: var(--glass-bg); color: var(--accent-danger); border: 1px solid var(--accent-danger); padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 20px; cursor: pointer; transition: all 0.3s var(--ease); font-weight: 500;"
+                                            onmouseover="this.style.background='var(--accent-danger)'; this.style.color='var(--bg-primary)'; this.style.transform='translateY(-1px)'"
+                                            onmouseout="this.style.background='var(--glass-bg)'; this.style.color='var(--accent-danger)'; this.style.transform='translateY(0)'">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
-        <button type="submit" class="btn btn-success me-2">
-            @(isEditing ? "Update Task" : "Add Task")
-        </button>
-
-        @if (isEditing)
-        {
-            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
-        }
-    </EditForm>
-
-    <hr class="my-4 border-light" />
-
-    <table class="table table-dark table-hover table-bordered">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Completed</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var task in tasks)
-            {
-                <tr>
-                    <td>@task.Title</td>
-                    <td>@task.Description</td>
-                    <td>
-                        <input type="checkbox" checked="@task.IsCompleted" @onclick="() => ToggleCompleted(task)" />
-                    </td>
-                    <td>@task.CreatedAt.ToLocalTime().ToString("g")</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-info me-2" @onclick="() => EditTask(task)">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteTask(task.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
 
 @code {
     private List<UserTaskResponse> tasks = new();

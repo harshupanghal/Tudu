@@ -7,12 +7,12 @@
 @inject NavigationManager NavigationManager
 @inject IUserService UserService
 
-<div class="card shadow-sm p-4 mt-4" style="max-width: 400px; margin: auto;">
-    <h3 class="text-center mb-4">Create Your Account</h3>
+<div class="register-card mt-5 max-height:500px">
+    <h3 class="text-center mb-4 " style="font-size: 2rem;">Create Your Account</h3>
 
     @if (!string.IsNullOrWhiteSpace(Message))
     {
-        <div class="alert @MessageClass fade show" role="alert">
+        <div class="register-alert @MessageClass">
             @Message
         </div>
     }
@@ -21,20 +21,20 @@
         <DataAnnotationsValidator />
 
         <div class="mb-3">
-            <label for="username" class="form-label fw-bold">Username</label>
+            <label for="username" class="form-label " style="color: var(--text-secondary);">Username</label>
             <InputText id="username" @bind-Value="registerRequest.UserName" 
-                       class="form-control" placeholder="Enter a unique username" />
+                       class="input-custom" placeholder="Enter a unique username" />
             <ValidationMessage For="@(() => registerRequest.UserName)" class="text-danger small" />
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label fw-bold">Password</label>
+            <label for="password" class="form-label " style="color: var(--text-secondary);">Password</label>
             <InputText id="password" @bind-Value="registerRequest.Password" type="password" 
-                       class="form-control" placeholder="Choose a strong password" />
+                       class="input-custom" placeholder="Choose a strong password" />
             <ValidationMessage For="@(() => registerRequest.Password)" class="text-danger small" />
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 d-flex justify-content-center align-items-center" disabled="@isLoading">
+        <button type="submit" class="btn-custom btn-primary-custom w-100" disabled="@isLoading">
             @if (isLoading)
             {
                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -48,8 +48,8 @@
     </EditForm>
 
     <div class="text-center mt-3">
-        <small class="text-muted">
-            Already have an account? <a href="/auth/login">Login here</a>
+        <small class="text-muted text-white-50">
+            Already have an account? <a href="/auth/login" style="color: var(--accent-primary);">Login here</a>
         </small>
     </div>
 </div>
@@ -99,7 +99,7 @@
         }
         catch (Exception ex)
         {
-            Message = $"❌ Unexpected error: {ex.Message}";
+            Message = $"Unexpected error: {ex.Message}";
             MessageClass = "alert-danger";
         }
         finally
