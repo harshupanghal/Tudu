@@ -3,44 +3,44 @@
 }
 
 :root {
-    /* Soft pastel color palette that complements black background */
+    /* Backgrounds */
     --bg-primary: black;
     --bg-secondary: #0a0a0a;
     --bg-tertiary: rgba(20, 20, 20, 0.9);
     --bg-card: rgba(25, 25, 25, 0.8);
-    /* Soft, eye-friendly text colors */
+    /* Text */
     --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
     --text-accent: #ffffff;
-    /* Gentle pastel accent colors */
-    --accent-primary: #7dd3fc; /* Soft sky blue */
-    --accent-primary-hover: #38bdf8;
-    --accent-secondary: #c084fc; /* Soft purple */
-    --accent-secondary-hover: #a855f7;
-    --accent-success: #86efac; /* Soft green */
-    --accent-success-hover: #4ade80;
-    --accent-warning: #fcd34d; /* Soft yellow */
-    --accent-warning-hover: #f59e0b;
-    --accent-danger: #fca5a5; /* Soft red */
-    --accent-danger-hover: #ef4444;
-    /* Subtle borders and shadows */
+    /* Premium & warm accent palette */
+    --accent-primary: #d4af37; /* Gold */
+    --accent-primary-hover: #b38b2e;
+    --accent-secondary: #e07a5f; /* Warm terracotta */
+    --accent-secondary-hover: #c7654d;
+    --accent-success: #88d498; /* Soft mint green */
+    --accent-success-hover: #65b879;
+    --accent-warning: #f4a261; /* Desert orange */
+    --accent-warning-hover: #e78b49;
+    --accent-danger: #e76f51; /* Warm coral red */
+    --accent-danger-hover: #cc5d43;
+    /* Borders & glass effects */
     --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-accent: rgba(125, 211, 252, 0.2);
+    --border-accent: rgba(212, 175, 55, 0.25);
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
-    /* Gentle shadows */
+    /* Shadows */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.2);
-    --shadow-glow: 0 0 20px rgba(125, 211, 252, 0.1);
-    /* Simplified animation timing */
+    --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.15);
+    /* Animations */
     --animation-duration: 0.4s;
     --animation-delay-base: 0.1s;
     --animation-delay-stagger: 0.08s;
-    /* Smooth easing */
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 body {
     background: var(--bg-primary);
@@ -97,12 +97,12 @@ body {
 
 /* Typography */
 .hero-title {
-    font-size: clamp(5rem, 9vw, 8rem);
+    font-size: clamp(5rem, 9vw, 9rem);
     font-weight: 300;
-    margin-top:-2rem;
+    margin-top: -5rem;
     letter-spacing: -0.02em;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
+    background: linear-gradient( 135deg, #d4af37 0%, #f5e6b0 30%, #b8860b 60%, #f0c419 100% );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
