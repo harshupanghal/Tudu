@@ -8,35 +8,38 @@ using Tudu.Application.Services;
 using Tudu.Infrastructure.Context;
 using Tudu.Infrastructure.Repositories;
 using Tudu.Ui.Components;
+using Tudu.Application.Validators;
+using Tudu.Application.Validations;
+using FluentValidation;
+using Blazored.LocalStorage;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// UI + Blazor Server
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
 
-// EF DB
 builder.Services.AddDbContext<TuduDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TuduConnection")));
+// "TuduConnection": "Server=(localdb)\\mssqllocaldb;Database=TuduDb;Trusted_Connection=True;"
 
-// Application services
+
+builder.Services.AddBlazoredLocalStorage();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserTaskService, UserTaskService>();
 
-// Repositories & security
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 builder.Services.AddAuthentication().AddCookie();
 
-// Authentication setup (cookie)
 const string AuthScheme = "tudu-auth";
 const string AuthCookie = "tudu-cookie";
 
-// Add Authentication & Authorization
 builder.Services.AddAuthentication(AuthScheme)
     .AddCookie(AuthScheme, options =>
     {
@@ -55,14 +58,20 @@ builder.Services.AddAuthentication(AuthScheme)
 
 builder.Services.AddAuthorization();
 
-// Add the built-in AuthenticationStateProvider that integrates with server cookie auth.
-// The server already knows how to provide authentication state from the HttpContext user.
 builder.Services.AddScoped<AuthenticationStateProvider,
-    ServerAuthenticationStateProvider>(); // ServerAuthenticationStateProvider lives in Blazor Server assemblies
+    ServerAuthenticationStateProvider>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserTaskRequestValidator>();
 
 var app = builder.Build();
 
-// Middleware order
+using (var scope = app.Services.CreateScope())
+    {
+    var db = scope.ServiceProvider.GetRequiredService<TuduDbContext>();
+    db.Database.Migrate();
+    }
+
 if (!app.Environment.IsDevelopment())
     {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);

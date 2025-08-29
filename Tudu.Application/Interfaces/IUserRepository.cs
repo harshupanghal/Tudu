@@ -6,6 +6,7 @@ namespace Tudu.Application.Interfaces
         {
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByUsernameAsync(string username);
+        Task<User?> GetByEmailAsync(string email);
         Task<List<User>> GetAllAsync();
 
         Task AddAsync(User user);

@@ -6,6 +6,8 @@
 @using Tudu.Application.Interfaces
 @inject NavigationManager NavigationManager
 @inject IUserService UserService
+@using Microsoft.AspNetCore.Components.Forms
+@inject IWebHostEnvironment Env
 
 <div class="register-card mt-5 max-height:500px">
     <h3 class="text-center mb-5 " style="font-size: 2rem;">Create Your Account</h3>
@@ -21,6 +23,13 @@
         <DataAnnotationsValidator />
 
         <div class="mb-3">
+            <label for="email" class="form-label " style="color: var(--text-secondary);">Email</label>
+            <InputText id="email" @bind-Value="registerRequest.Email" 
+                       class="input-custom" placeholder="Enter your email" />
+            <ValidationMessage For="@(() => registerRequest.Email)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
             <label for="username" class="form-label " style="color: var(--text-secondary);">Username</label>
             <InputText id="username" @bind-Value="registerRequest.UserName" 
                        class="input-custom" placeholder="Enter a unique username" />
@@ -33,6 +42,13 @@
                        class="input-custom" placeholder="Choose a strong password" />
             <ValidationMessage For="@(() => registerRequest.Password)" class="text-danger small" />
         </div>
+
+           <InputFile OnChange="HandleFileSelected" accept="image/*" />
+@if (!string.IsNullOrEmpty(PreviewUrl))
+{
+    <img src="@PreviewUrl" alt="Preview" style="width:150px;height:150px;border-radius:50%;" />
+}
+
 
         <button type="submit" class="btn-custom btn-primary-custom w-100" disabled="@isLoading">
             @if (isLoading)
@@ -56,7 +72,7 @@
 
 @code {
     private const string RegiForm = "Registration-Form";
-
+       private string? PreviewUrl;
     [SupplyParameterFromForm(FormName = RegiForm)]
     private RegisterRequest registerRequest { get; set; } = new();
 
@@ -64,6 +80,7 @@
     private string MessageClass = "alert-info";
     private bool isLoading = false;
     private CancellationTokenSource _cts = new();
+    private IBrowserFile? uploadedFile;
 
     private async Task HandleRegister()
     {
@@ -113,4 +130,55 @@
         _cts.Cancel();
         _cts.Dispose();
     }
+
+    //   private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    // {
+    //     uploadedFile = e.File;
+
+    //     Generate unique filename
+    //     var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadedFile.Name)}";
+    //     var savePath = Path.Combine(Env.WebRootPath, "uploads", fileName);
+
+    //     Ensure uploads folder exists
+    //     Directory.CreateDirectory(Path.GetDirectoryName(savePath)!);
+
+    //     Save file
+    //     using var stream = new FileStream(savePath, FileMode.Create);
+    //     await uploadedFile.OpenReadStream(5 * 1024 * 1024).CopyToAsync(stream);
+
+    //     Save relative path into model
+    //     registerRequest.ProfilePicturePath = $"/uploads/{fileName}";
+    // }
+    
+    
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+
+            // Limit size (2 MB here)
+            var resized = await file.RequestImageFileAsync(file.ContentType, 300, 300);
+            var buffer = new byte[resized.Size];
+            await resized.OpenReadStream(2_000_000).ReadAsync(buffer);
+
+            // Convert to base64 for preview
+            PreviewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+
+            // Save to wwwroot/uploads
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+            var savePath = Path.Combine(Env.WebRootPath, "uploads", fileName);
+
+            await using var fs = new FileStream(savePath, FileMode.Create);
+            await file.OpenReadStream(2_000_000).CopyToAsync(fs);
+
+            // Save path in DB (example)
+            registerRequest.ProfilePicturePath = $"/uploads/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Image upload failed: " + ex.Message);
+        }
+    }
+}
 }

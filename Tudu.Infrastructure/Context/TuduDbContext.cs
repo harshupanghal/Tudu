@@ -8,6 +8,8 @@ namespace Tudu.Infrastructure.Context
         public TuduDbContext(DbContextOptions<TuduDbContext> options)
             : base(options)
             {
+            // Ensure DB and tables are created at startup
+            //Database.EnsureCreated();
             }
 
         // DbSets for entities
@@ -35,7 +37,7 @@ namespace Tudu.Infrastructure.Context
                 entity.Property(t => t.IsCompleted).IsRequired();
                 entity.Property(t => t.CreatedAt).IsRequired();
 
-                // Relationships b/w entities
+                // Relationships
                 entity.HasOne(t => t.User)
                       .WithMany(u => u.Tasks)
                       .HasForeignKey(t => t.UserId)

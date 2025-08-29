@@ -12,6 +12,9 @@ public static class UserTaskMapper
             Title = dto.Title,
             Description = dto.Description,
             UserId = dto.UserId,
+            DueDate = dto.DueDate,
+            Category = dto.Category,
+            Reminder = dto.Reminder,
             CreatedAt = DateTime.UtcNow
             };
         }

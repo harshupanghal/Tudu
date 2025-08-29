@@ -23,5 +23,9 @@ public class UserTask
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+
+    public Boolean Reminder { get; set; }
+    public DateTime? DueDate { get; set; }
+    public string? Category { get; set; }
     }
 

@@ -91,7 +91,7 @@
             return;
             }
 
-        LoggedInUserModel user = new LoggedInUserModel(result.Id, result.UserName);
+        LoggedInUserModel user = new LoggedInUserModel(result.Id, result.UserName,result.Email,result.ProfilePicturePath);
 
         var claims = user.ToClaims();
         var identity = new ClaimsIdentity(claims, AuthScheme);
@@ -106,4 +106,3 @@
         Navigation.NavigateTo("/tasks", forceLoad: true); 
     }
 }
-

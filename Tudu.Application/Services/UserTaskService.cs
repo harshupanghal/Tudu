@@ -28,6 +28,9 @@ public class UserTaskService : IUserTaskService
         task.Title = request.Title;
         task.Description = request.Description;
         task.IsCompleted = request.IsCompleted;
+        task.DueDate = request.DueDate;
+        task.Category = request.Category;
+        task.Reminder = request.Reminder;
         task.UpdatedAt = DateTime.UtcNow;
 
         await _taskRepository.UpdateAsync(task);

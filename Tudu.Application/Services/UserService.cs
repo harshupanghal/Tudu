@@ -19,9 +19,12 @@ namespace Tudu.Application.Services
 
         public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
             {
-            var existingUser = await _userRepository.GetByUsernameAsync(request.UserName);
-            if (existingUser != null)
+            var existingUserName = await _userRepository.GetByUsernameAsync(request.UserName);
+            var existingEmail = await _userRepository.GetByEmailAsync(request.Email);
+            if (existingUserName != null )
                 return new AuthResponse { Success = false, message = "Username already exists." };
+            if (existingEmail != null)
+                return new AuthResponse { Success = false, message = "Email already in use" };
 
             var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
@@ -29,6 +32,8 @@ namespace Tudu.Application.Services
                 {
                 UserName = request.UserName,
                 Password = hashedPassword, // store hash instead of raw password
+                ProfilePicturePath = request.ProfilePicturePath,
+                Email = request.Email,
                 CreatedAt = DateTime.UtcNow
                 };
 

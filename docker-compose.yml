@@ -1,0 +1,6 @@
+services:
+  tudu.ui:
+    image: ${DOCKER_REGISTRY-}tuduui
+    build:
+      context: .
+      dockerfile: Tudu.Ui/Dockerfile

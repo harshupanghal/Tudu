@@ -46,6 +46,12 @@ namespace Tudu.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.UserName == username);
             }
 
+        public async Task<User?> GetByEmailAsync(string email)
+            {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+            }
+
         public async Task UpdateAsync(User user)
             {
             _context.Users.Update(user);

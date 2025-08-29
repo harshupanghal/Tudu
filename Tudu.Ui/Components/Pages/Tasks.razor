@@ -9,9 +9,24 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 
-<h2 class=" text-center" style="font-size: clamp(2rem, 5vw, 3rem); margin: 2rem 0;">Your Tasks</h2>
-
 <div style="max-width:900px;" class="mx-auto my-5">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+    @if (!string.IsNullOrEmpty(profilePicture))
+    {
+        <img src="@profilePicture" alt="profile"
+             style="width:80px;height:80px;object-fit:cover;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,0.2);" />
+    }
+    else if (!string.IsNullOrEmpty(userName))
+    {
+        <div style="width:80px;height:80px;border-radius:50%;background:#3b82f6;
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:2rem;color:white;font-weight:600;box-shadow:0 0 6px rgba(0,0,0,0.2);">
+            @userName[0].ToString().ToUpper()
+        </div>
+    }
+</div>
+
+
     @if (isLoading)
     {
         <div class="text-center py-4">
@@ -22,7 +37,8 @@
     <!-- Enhanced Form -->
     <div style="background: var(--bg-card); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle);">
         <EditForm Model="taskModel" OnValidSubmit="HandleSave" method="post" FormName="TaskForm">
-            <DataAnnotationsValidator />
+            
+        <FluentValidationValidator @ref="fvValidator" />
             <ValidationSummary style="color: var(--accent-danger); margin-bottom: 1rem;" />
 
             <div style="margin-bottom: 1.5rem;">
@@ -143,6 +159,10 @@
     private bool isEditing = false;
     private int editingTaskId = 0;
     private bool isLoading = true;
+    private FluentValidationValidator? fvValidator;
+ private ClaimsPrincipal? user;
+    private string? profilePicture;
+    private string? userName;
 
     protected override async Task OnInitializedAsync()
     {
@@ -156,6 +176,8 @@
         }
 
         currentUserId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        profilePicture = user.FindFirst("ProfilePicture")?.Value;
+        userName = user.FindFirst(ClaimTypes.Name)?.Value;
         await LoadTasks();
         isLoading = false;
     }

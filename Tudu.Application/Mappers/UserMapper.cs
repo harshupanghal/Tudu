@@ -11,6 +11,7 @@ public static class UserMapper
             {
             Id = user.Id,
             UserName = user.UserName,
+            ProfilePicturePath = user.ProfilePicturePath,
             Success = true,
             message = message
             };
